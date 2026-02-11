@@ -23,6 +23,10 @@ app.get('/health', (_, res) => res.json({ ok: true }));
 
 app.use('/api/patient-history', patientHistoryRoutes);
 app.use('/api/chime', chimeRoutes);
+app.get('/', (_req, res) => {
+  res.json({ status: 'OK', message: 'Video Consulta Backend API está funcionando' });
+});
+
 
 attachWebSocket(server);
 
