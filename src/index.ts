@@ -31,6 +31,9 @@ app.get('/', (_req, res) => {
 attachWebSocket(server);
 
 server.listen(PORT, () => {
-  console.log(`Backend video-consulta en http://localhost:${PORT}`);
-  console.log(`WebSocket en ws://localhost:${PORT}/ws`);
+  const host = process.env.RAILWAY_PUBLIC_DOMAIN
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : `http://localhost:${PORT}`;
+  console.log(`Backend video-consulta en ${host}`);
+  console.log(`WebSocket en ${host.replace(/^http/, 'ws')}/ws`);
 });

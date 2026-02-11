@@ -1,0 +1,11 @@
+# Railway: despliegue del backend (API + WebSocket)
+# https://docs.railway.app/reference/config-as-code
+# Nixpacks ejecuta npm run build automáticamente; start solo arranca el servidor.
+
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
