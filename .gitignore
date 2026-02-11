@@ -1,0 +1,17 @@
+/node_modules
+/dist
+/build
+/coverage
+/logs
+/tmp
+/temp
+/cache
+/backup
+/archive
+/old
+/trash
+/recycle
+/restore
+
+.env
+.env.example
