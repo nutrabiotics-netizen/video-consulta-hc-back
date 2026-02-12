@@ -76,6 +76,15 @@ export async function invokeAgent(input: AgentInput): Promise<string> {
 }
 
 function buildPrompt(input: AgentInput): string {
+  const activeSectionNote = input.activeSection
+    ? `
+IMPORTANTE - Sección activa: "${input.activeSection}".
+- El médico está llenando SOLO esta sección. Las "propuestas" deben ser únicamente para esta sección.
+- IGNORA en la transcripción: saludos iniciales, despedidas, frases de apertura genéricas ("cuéntame qué lo trae", "qué lo trae el día de hoy", "¿en qué puedo ayudarle?", "buenos días/tardes"), y cualquier diálogo que no aporte datos clínicos para esta sección.
+- El "resumen" debe ser SOLO lo relevante para la sección activa: información clínica o datos que el médico o el paciente hayan dado para esta parte de la historia. Si hasta ahora solo hay saludos y preguntas de apertura sin contenido clínico, devuelve resumen vacío o "Aún no hay información clínica relevante para esta sección."
+`
+    : '';
+
   return `Eres un asistente clínico. Contexto de historia previa del paciente:
 ${input.patientHistoryContext}
 
@@ -83,11 +92,11 @@ Transcripción de la consulta (${input.isPartial ? 'parcial' : 'segmento final'}
 ${input.transcriptionSegment}
 
 ${input.currentSections ? `Secciones ya propuestas/actuales:\n${JSON.stringify(input.currentSections)}` : ''}
-${input.activeSection ? `\nIMPORTANTE: El médico está llenando solo la sección "${input.activeSection}". Solo incluye en "propuestas" esta sección, ninguna otra.` : ''}
+${activeSectionNote}
 
 Responde en JSON con exactamente dos claves:
-- "resumen": string con un resumen breve y actualizado de la conversación de la consulta hasta ahora (lo que se ha dicho, motivo de consulta, hallazgos relevantes).
-- "propuestas": array de { "seccion": "nombreSeccion", "contenido": "texto" }. ${input.activeSection ? `Solo incluye la sección "${input.activeSection}".` : 'Solo incluye secciones que puedas completar con la transcripción.'} Nombres de sección válidos (orden lógico de la historia): informacionGeneral, motivoAtencion, revisionSistemas, antecedentes, examenFisico, resultadosParaclinicos, alertasAlergias, diagnosticos, analisisPlan, recomendaciones.`;
+- "resumen": resumen breve solo de la información clínica relevante para la consulta (o para la sección activa si se indicó). No incluyas saludos ni preguntas genéricas de apertura.
+- "propuestas": array de { "seccion": "nombreSeccion", "contenido": "texto" }. ${input.activeSection ? `Solo incluye la sección "${input.activeSection}".` : 'Solo incluye secciones que puedas completar con la transcripción.'} Nombres de sección válidos: informacionGeneral, motivoAtencion, revisionSistemas, antecedentes, examenFisico, resultadosParaclinicos, alertasAlergias, diagnosticos, analisisPlan, recomendaciones.`;
 }
 
 export interface AgentResponse {
